@@ -430,7 +430,7 @@ function ActiveView({
           : copy.roundPause
 
   return (
-    <main className="relative mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col items-center select-none">
+    <main className="relative mx-auto grid min-h-0 w-full max-w-3xl flex-1 grid-rows-[auto_minmax(0,1fr)_auto] select-none">
       <div className="flex items-center justify-center gap-8 pt-1 sm:gap-12 sm:pt-2">
         <CountRing
           current={phase.round}
@@ -446,11 +446,11 @@ function ActiveView({
         />
       </div>
 
-      <div className="flex min-h-0 w-full flex-1 items-center justify-center py-3">
+      <div className="flex h-full min-h-0 w-full items-center justify-center [container-type:size]">
         <TimerRing
           progress={progress}
           color={color}
-          className="aspect-square h-auto w-[min(100%,36rem)] max-h-full"
+          className="size-[min(100cqw,100cqh,36rem)]"
         >
           <p
             className="text-[13px] font-medium tracking-[0.22em] uppercase sm:text-[14px]"
@@ -463,7 +463,7 @@ function ActiveView({
             aria-live="polite"
             className={cn(
               "mt-1 font-light tracking-[-0.06em] text-white tabular-nums",
-              "text-[clamp(4.5rem,18vw,7.5rem)] leading-none",
+              "text-[clamp(2.75rem,32cqw,7.5rem)] leading-none",
               inLastFive && !paused && "animate-[second-pulse_0.55s_ease-out]",
               sessionEnd && !paused && "text-[#ffd60a]"
             )}

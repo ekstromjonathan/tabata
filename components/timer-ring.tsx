@@ -22,7 +22,10 @@ export function TimerRing({
 
   return (
     <div
-      className={cn("relative mx-auto aspect-square", className)}
+      className={cn(
+        "relative mx-auto aspect-square [container-type:size]",
+        className
+      )}
     >
       <svg
         viewBox={`0 0 ${size} ${size}`}
