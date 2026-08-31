@@ -2,6 +2,8 @@
 
 Minimal tabata-timer til lokal trening. Svart skjerm, store tall, behagelige pip.
 
+Norsk, svensk og engelsk — bytt språk øverst til høyre.
+
 ## Hva du kan stille inn
 
 - **Arbeid** — aktive sekunder per øvelse
@@ -10,9 +12,13 @@ Minimal tabata-timer til lokal trening. Svart skjerm, store tall, behagelige pip
 - **Runder** — hvor mange ganger kretsen gjentas
 - **Mellom runder** — pause etter en ferdig runde
 
+Tallene kan skrives inn eller justeres med + og −. Total tid oppdateres med en gang.
+
 Klassisk tabata er 20 s arbeid, 10 s hvile, 8 øvelser og 1 runde.
 
-De siste fem sekundene av hver økt (og hvert intervall) telles ned med pip. Skjermen holdes våken mens timeren kjører.
+Under økten viser to små sirkler runde og øvelse. **Øvelse på nytt** starter den gjeldende arbeidsøkten forfra.
+
+De siste fem sekundene av økten telles ned med pip. Ferdig økt feires med confetti. Skjermen holdes våken mens timeren kjører.
 
 ## Kjør lokalt
 

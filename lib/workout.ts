@@ -97,6 +97,22 @@ export function displaySeconds(remainingMs: number): number {
   return Math.max(0, Math.ceil(remainingMs / 1000))
 }
 
+export function findWorkPhaseIndex(phases: Phase[], fromIndex: number): number {
+  const current = phases[fromIndex]
+  if (!current) return 0
+  for (let index = fromIndex; index >= 0; index--) {
+    const phase = phases[index]
+    if (
+      phase.kind === "work" &&
+      phase.round === current.round &&
+      phase.exercise === current.exercise
+    ) {
+      return index
+    }
+  }
+  return fromIndex
+}
+
 const STORAGE_KEY = "tabata-settings"
 const listeners = new Set<() => void>()
 let memory: Settings | null = null
