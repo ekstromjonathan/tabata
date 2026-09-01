@@ -4,6 +4,8 @@ Minimal tabata-timer som produkt: **19 kr per måned per bruker**.
 
 Nettapp, **App Store** og **Google Play**. I butikk-appene går betaling via Apple og Google (påkrevd). På nett via Stripe.
 
+Organisk spredning uten annonsebudsjett: [docs/MARKEDSFORING.md](docs/MARKEDSFORING.md).
+
 ## Kjør lokalt
 
 ```bash
