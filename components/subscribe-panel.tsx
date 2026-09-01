@@ -42,7 +42,7 @@ export function SubscribePanel({
         <h1 className="text-[32px] font-semibold tracking-tight">
           {copy.subscribeTitle}
         </h1>
-        <p className="mt-3 max-w-sm text-[16px] leading-relaxed text-white/55">
+        <p className="mt-3 max-w-sm text-[16px] leading-relaxed text-ink-muted">
           {native ? copy.nativeSubscribeBody : copy.subscribeBody}
         </p>
         {native ? (
@@ -52,23 +52,23 @@ export function SubscribePanel({
             <p className="mt-8 text-[40px] font-semibold tracking-tight">
               {copy.price}
             </p>
-            <p className="mt-1 text-[14px] text-white/45">{copy.priceNote}</p>
+            <p className="mt-1 text-[14px] text-ink-muted">{copy.priceNote}</p>
             <form action={startCheckoutAction} className="mt-10 w-full max-w-[240px]">
               <Button
                 type="submit"
-                className="h-14 w-full rounded-full bg-white text-[17px] font-medium text-black hover:bg-white/90"
+                className="h-14 w-full rounded-full bg-cta text-[17px] font-medium text-cta-fg hover:opacity-90"
               >
                 {mock ? copy.mockPay : copy.pay}
               </Button>
             </form>
             {mock ? (
-              <p className="mt-4 max-w-xs text-[13px] text-white/35">
+              <p className="mt-4 max-w-xs text-[13px] text-ink-faint">
                 {copy.mockNote}
               </p>
             ) : null}
           </>
         )}
-        <Link href="/" className="mt-8 text-[13px] text-white/40 hover:text-white">
+        <Link href="/" className="mt-8 text-[13px] text-ink-muted hover:text-ink">
           {copy.product}
         </Link>
       </main>
@@ -160,12 +160,12 @@ function NativeCheckout({
       <p className="mt-8 text-[40px] font-semibold tracking-tight">
         {price ?? (ready ? copy.price : "…")}
       </p>
-      <p className="mt-1 text-[14px] text-white/45">{copy.priceNote}</p>
-      <p className="mt-4 max-w-xs text-[12px] leading-relaxed text-white/35">
+      <p className="mt-1 text-[14px] text-ink-muted">{copy.priceNote}</p>
+      <p className="mt-4 max-w-xs text-[12px] leading-relaxed text-ink-faint">
         {copy.appleLegal}
       </p>
       {storeDown ? (
-        <p className="mt-6 max-w-xs text-[13px] text-white/45">
+        <p className="mt-6 max-w-xs text-[13px] text-ink-muted">
           {copy.storeUnavailable}
         </p>
       ) : (
@@ -173,7 +173,7 @@ function NativeCheckout({
           type="button"
           disabled={busy || !ready}
           onClick={() => void buy()}
-          className="mt-10 h-14 w-full max-w-[240px] rounded-full bg-white text-[17px] font-medium text-black hover:bg-white/90 disabled:opacity-50"
+          className="mt-10 h-14 w-full max-w-[240px] rounded-full bg-cta text-[17px] font-medium text-cta-fg hover:opacity-90 disabled:opacity-50"
         >
           {busy ? copy.working : copy.pay}
         </Button>
@@ -182,7 +182,7 @@ function NativeCheckout({
         type="button"
         disabled={busy}
         onClick={() => void restore()}
-        className="mt-4 text-[13px] text-white/50 hover:text-white disabled:opacity-50"
+        className="mt-4 text-[13px] text-ink-muted hover:text-ink disabled:opacity-50"
       >
         {copy.restore}
       </button>
@@ -191,7 +191,7 @@ function NativeCheckout({
           <Button
             type="submit"
             variant="ghost"
-            className="h-12 w-full rounded-full text-white/45 hover:bg-white/8 hover:text-white"
+            className="h-12 w-full rounded-full text-ink-muted hover:bg-fill hover:text-ink"
           >
             {copy.mockPay}
           </Button>

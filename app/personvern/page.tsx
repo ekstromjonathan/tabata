@@ -7,7 +7,7 @@ export default function PrivacyPage() {
     <div className="mx-auto min-h-dvh w-full max-w-md px-6 py-8 pt-[max(2rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))]">
       <SiteHeader />
       <h1 className="mt-10 text-[28px] font-semibold tracking-tight">Personvern</h1>
-      <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-white/60">
+      <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-ink-muted">
         <p>
           Tabata lagrer e-posten din og om abonnementet er aktivt. Passord lagres
           som hash, ikke i klartekst.
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
           kjøpslogger.
         </p>
       </div>
-      <Link href="/" className="mt-10 inline-block text-[14px] text-white/40">
+      <Link href="/" className="mt-10 inline-block text-[14px] text-ink-muted">
         Tilbake
       </Link>
     </div>

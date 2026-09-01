@@ -61,8 +61,8 @@ export function StepperRow({
   return (
     <div className="flex items-center justify-between gap-3 px-5 py-3.5">
       <div className="min-w-0">
-        <p className="text-[17px] tracking-tight text-white">{label}</p>
-        {hint ? <p className="text-[12px] text-white/35">{hint}</p> : null}
+        <p className="text-[17px] tracking-tight text-ink">{label}</p>
+        {hint ? <p className="text-[12px] text-ink-faint">{hint}</p> : null}
       </div>
       <div className="flex items-center gap-1">
         <Button
@@ -72,7 +72,7 @@ export function StepperRow({
           aria-label={decreaseLabel}
           disabled={value <= min}
           className={cn(
-            "size-9 rounded-full bg-white/8 text-white hover:bg-white/14",
+            "size-9 rounded-full bg-fill text-ink hover:bg-fill-strong",
             "disabled:opacity-25"
           )}
           onPointerDown={(event) => {
@@ -95,8 +95,8 @@ export function StepperRow({
             value={shown}
             className={cn(
               "w-[2.75rem] bg-transparent text-center text-[17px] font-medium",
-              "text-white tabular-nums tracking-tight outline-none select-text",
-              "caret-white"
+              "text-ink tabular-nums tracking-tight outline-none select-text",
+              "caret-ink"
             )}
             onChange={(event) => {
               const raw = event.target.value.replace(/[^\d]/g, "")
@@ -118,7 +118,7 @@ export function StepperRow({
             }}
           />
           {suffix ? (
-            <span className="text-[13px] font-normal text-white/40">{suffix}</span>
+            <span className="text-[13px] font-normal text-ink-muted">{suffix}</span>
           ) : null}
         </div>
         <Button
@@ -128,7 +128,7 @@ export function StepperRow({
           aria-label={increaseLabel}
           disabled={value >= max}
           className={cn(
-            "size-9 rounded-full bg-white/8 text-white hover:bg-white/14",
+            "size-9 rounded-full bg-fill text-ink hover:bg-fill-strong",
             "disabled:opacity-25"
           )}
           onPointerDown={(event) => {

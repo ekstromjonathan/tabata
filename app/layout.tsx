@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next"
+import Script from "next/script"
 import { Geist, Geist_Mono } from "next/font/google"
 
 import { NativeBootstrap } from "@/components/native-bootstrap"
+import { ThemeBootstrap } from "@/components/theme-bootstrap"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -13,6 +15,8 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 })
+
+const themeBootScript = `(function(){try{var t=localStorage.getItem("tabata-theme");if(t!=="light"&&t!=="dark"&&t!=="custom")t="dark";var r=document.documentElement;r.setAttribute("data-theme",t);r.classList.toggle("dark",t!=="light");}catch(e){document.documentElement.setAttribute("data-theme","dark");document.documentElement.classList.add("dark");}})();`
 
 export const metadata: Metadata = {
   title: "Tabata",
@@ -40,10 +44,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="nb"
+      data-theme="dark"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
     >
-      <body className="min-h-full bg-black font-sans text-white">
+      <body className="min-h-full bg-canvas font-sans text-ink">
+        <Script id="tabata-theme" strategy="beforeInteractive">
+          {themeBootScript}
+        </Script>
         <NativeBootstrap />
+        <ThemeBootstrap />
         {children}
       </body>
     </html>

@@ -28,7 +28,7 @@ export function CountRing({ current, total, label, color }: CountRingProps) {
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="rgba(255,255,255,0.08)"
+            stroke="var(--ring-track)"
             strokeWidth={stroke}
           />
           <circle
@@ -46,17 +46,17 @@ export function CountRing({ current, total, label, color }: CountRingProps) {
         <p
           className={cn(
             "absolute inset-0 flex items-center justify-center",
-            "font-medium tracking-tight text-white tabular-nums",
+            "font-medium tracking-tight text-ink tabular-nums",
             "text-[17px] sm:text-[19px]"
           )}
         >
           {current}
-          <span className="text-[13px] text-white/35 sm:text-[14px]">
+          <span className="text-[13px] text-ink-faint sm:text-[14px]">
             /{total}
           </span>
         </p>
       </div>
-      <p className="text-[10px] font-medium tracking-[0.18em] text-white/35 uppercase sm:text-[11px]">
+      <p className="text-[10px] font-medium tracking-[0.18em] text-ink-faint uppercase sm:text-[11px]">
         {label}
       </p>
     </div>

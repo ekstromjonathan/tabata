@@ -25,6 +25,10 @@ export type Messages = {
   round: string
   exercise: string
   language: string
+  theme: string
+  themeLight: string
+  themeDark: string
+  themeCustom: string
   decrease: string
   increase: string
 }
@@ -61,6 +65,10 @@ export const MESSAGES: Record<Locale, Messages> = {
     round: "Runde",
     exercise: "Øvelse",
     language: "Språk",
+    theme: "Tema",
+    themeLight: "Lys",
+    themeDark: "Mørk",
+    themeCustom: "Egen",
     decrease: "Reduser",
     increase: "Øk",
   },
@@ -89,6 +97,10 @@ export const MESSAGES: Record<Locale, Messages> = {
     round: "Runda",
     exercise: "Övning",
     language: "Språk",
+    theme: "Tema",
+    themeLight: "Ljust",
+    themeDark: "Mörkt",
+    themeCustom: "Egen",
     decrease: "Minska",
     increase: "Öka",
   },
@@ -117,6 +129,10 @@ export const MESSAGES: Record<Locale, Messages> = {
     round: "Round",
     exercise: "Exercise",
     language: "Language",
+    theme: "Theme",
+    themeLight: "Light",
+    themeDark: "Dark",
+    themeCustom: "Custom",
     decrease: "Decrease",
     increase: "Increase",
   },

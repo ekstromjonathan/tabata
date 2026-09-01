@@ -15,6 +15,7 @@ import { Pause, Play, RotateCcw } from "lucide-react"
 import { Confetti } from "@/components/confetti"
 import { CountRing } from "@/components/count-ring"
 import { LanguageSwitcher } from "@/components/language-switcher"
+import { ThemeSwitcher } from "@/components/theme-switcher"
 import { StepperRow } from "@/components/stepper-row"
 import { TimerRing } from "@/components/timer-ring"
 import { Button } from "@/components/ui/button"
@@ -232,7 +233,7 @@ export function TabataTimer({ accountHref }: { accountHref?: string }) {
   return (
     <div
       className={cn(
-        "relative flex min-h-dvh flex-col overflow-hidden bg-black text-white",
+        "relative flex min-h-dvh flex-col overflow-hidden bg-canvas text-ink",
         "px-5 pt-[max(2.25rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:px-6"
       )}
     >
@@ -242,7 +243,7 @@ export function TabataTimer({ accountHref }: { accountHref?: string }) {
         style={{
           background:
             status === "setup" || status === "done"
-              ? "radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.06), transparent 55%)"
+              ? "radial-gradient(ellipse at 50% 0%, var(--fill-strong), transparent 55%)"
               : `radial-gradient(ellipse at 50% 35%, ${themeColor}22, transparent 58%)`,
         }}
       />
@@ -250,17 +251,26 @@ export function TabataTimer({ accountHref }: { accountHref?: string }) {
       {accountHref ? (
         <Link
           href={accountHref}
-          className="absolute top-0 left-0 z-30 h-8 px-2.5 text-[12px] font-medium tracking-[0.08em] text-white/55 hover:text-white"
+          className="absolute top-0 left-0 z-30 h-8 px-2.5 text-[12px] font-medium tracking-[0.08em] text-ink-muted hover:text-ink"
         >
           {PRODUCT[locale].account}
         </Link>
       ) : null}
-      <LanguageSwitcher
-        locale={locale}
-        copy={copy}
-        onChange={saveLocale}
-        className="absolute top-0 right-0"
-      />
+      <div className="absolute top-0 right-0 z-30 flex items-center gap-2">
+        <ThemeSwitcher
+          labels={{
+            theme: copy.theme,
+            light: copy.themeLight,
+            dark: copy.themeDark,
+            custom: copy.themeCustom,
+          }}
+        />
+        <LanguageSwitcher
+          locale={locale}
+          copy={copy}
+          onChange={saveLocale}
+        />
+      </div>
 
       {status === "done" && typeof document !== "undefined"
         ? createPortal(<Confetti />, document.body)
@@ -321,13 +331,13 @@ function SetupView({
   return (
     <main className="relative mx-auto flex w-full max-w-md flex-1 flex-col select-none">
       <header className="mt-4 mb-8 text-center sm:mb-10">
-        <p className="text-[12px] font-medium tracking-[0.22em] text-white/35 uppercase">
+        <p className="text-[12px] font-medium tracking-[0.22em] text-ink-faint uppercase">
           {copy.timer}
         </p>
         <h1 className="mt-2 text-[40px] font-semibold tracking-tight">Tabata</h1>
       </header>
 
-      <section className="overflow-hidden rounded-[22px] bg-white/6">
+      <section className="overflow-hidden rounded-[22px] bg-fill">
         <StepperRow
           label={copy.work}
           hint={copy.workHint}
@@ -388,7 +398,7 @@ function SetupView({
 
       <p
         aria-live="polite"
-        className="mt-5 text-center text-[15px] text-white/40 tabular-nums"
+        className="mt-5 text-center text-[15px] text-ink-muted tabular-nums"
       >
         {formatClock(duration)} {copy.total}
       </p>
@@ -397,7 +407,7 @@ function SetupView({
         <Button
           type="button"
           onClick={onStart}
-          className="h-14 w-full max-w-[220px] rounded-full bg-white text-[17px] font-medium text-black hover:bg-white/90"
+          className="h-14 w-full max-w-[220px] rounded-full bg-cta text-[17px] font-medium text-cta-fg hover:opacity-90"
         >
           {copy.start}
         </Button>
@@ -434,7 +444,7 @@ function ActiveView({
   onRestartExercise: () => void
 }) {
   if (!phase) return null
-  const color = paused ? "rgba(255,255,255,0.28)" : PHASE_COLOR[phase.kind]
+  const color = paused ? "color-mix(in srgb, var(--ink) 28%, transparent)" : PHASE_COLOR[phase.kind]
   const label =
     paused
       ? copy.pause
@@ -451,13 +461,13 @@ function ActiveView({
           current={phase.round}
           total={settings.rounds}
           label={copy.round}
-          color={paused ? "rgba(255,255,255,0.35)" : PHASE_COLOR.roundRest}
+          color={paused ? "color-mix(in srgb, var(--ink) 35%, transparent)" : PHASE_COLOR.roundRest}
         />
         <CountRing
           current={phase.exercise}
           total={settings.exercises}
           label={copy.exercise}
-          color={paused ? "rgba(255,255,255,0.35)" : PHASE_COLOR.work}
+          color={paused ? "color-mix(in srgb, var(--ink) 35%, transparent)" : PHASE_COLOR.work}
         />
       </div>
 
@@ -469,7 +479,7 @@ function ActiveView({
         >
           <p
             className="text-[13px] font-medium tracking-[0.22em] uppercase sm:text-[14px]"
-            style={{ color: paused ? "rgba(255,255,255,0.45)" : PHASE_COLOR[phase.kind] }}
+            style={{ color: paused ? "color-mix(in srgb, var(--ink) 45%, transparent)" : PHASE_COLOR[phase.kind] }}
           >
             {label}
           </p>
@@ -477,7 +487,7 @@ function ActiveView({
             key={`${phase.kind}-${seconds}`}
             aria-live="polite"
             className={cn(
-              "mt-1 font-light tracking-[-0.06em] text-white tabular-nums",
+              "mt-1 font-light tracking-[-0.06em] text-ink tabular-nums",
               "text-[clamp(2.75rem,32cqw,7.5rem)] leading-none",
               inLastFive && !paused && "animate-[second-pulse_0.55s_ease-out]",
               sessionEnd && !paused && "text-[#ffd60a]"
@@ -493,7 +503,7 @@ function ActiveView({
           type="button"
           variant="ghost"
           onClick={onRestartExercise}
-          className="h-10 rounded-full px-4 text-[14px] text-white/55 hover:bg-white/8 hover:text-white"
+          className="h-10 rounded-full px-4 text-[14px] text-ink-muted hover:bg-fill hover:text-ink"
         >
           <RotateCcw className="size-3.5" />
           {copy.restartExercise}
@@ -503,14 +513,14 @@ function ActiveView({
             type="button"
             variant="ghost"
             onClick={onReset}
-            className="h-14 rounded-full bg-white/8 px-6 text-[16px] text-white hover:bg-white/14"
+            className="h-14 rounded-full bg-fill px-6 text-[16px] text-ink hover:bg-fill-strong"
           >
             {copy.end}
           </Button>
           <Button
             type="button"
             onClick={paused ? onResume : onPause}
-            className="h-14 min-w-32 rounded-full bg-white px-7 text-[16px] font-medium text-black hover:bg-white/90 sm:min-w-36"
+            className="h-14 min-w-32 rounded-full bg-cta px-7 text-[16px] font-medium text-cta-fg hover:opacity-90 sm:min-w-36"
           >
             {paused ? <Play className="size-4" /> : <Pause className="size-4" />}
             {paused ? copy.resume : copy.pause}
@@ -534,20 +544,20 @@ function DoneView({
 }) {
   return (
     <main className="relative mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center text-center select-none">
-      <p className="text-[12px] font-medium tracking-[0.22em] text-white/35 uppercase">
+      <p className="text-[12px] font-medium tracking-[0.22em] text-ink-faint uppercase">
         {copy.done}
       </p>
       <h1 className="mt-3 text-[40px] font-semibold tracking-tight">
         {copy.niceWork}
       </h1>
-      <p className="mt-3 text-[18px] text-white/45 tabular-nums">
+      <p className="mt-3 text-[18px] text-ink-muted tabular-nums">
         {formatClock(duration)}
       </p>
       <div className="mt-12 flex w-full flex-col items-center gap-3">
         <Button
           type="button"
           onClick={onStart}
-          className="h-14 w-full max-w-[220px] rounded-full bg-white text-[17px] font-medium text-black hover:bg-white/90"
+          className="h-14 w-full max-w-[220px] rounded-full bg-cta text-[17px] font-medium text-cta-fg hover:opacity-90"
         >
           {copy.again}
         </Button>
@@ -555,7 +565,7 @@ function DoneView({
           type="button"
           variant="ghost"
           onClick={onReset}
-          className="h-11 text-[15px] text-white/50 hover:bg-transparent hover:text-white"
+          className="h-11 text-[15px] text-ink-muted hover:bg-transparent hover:text-ink"
         >
           <RotateCcw className="size-3.5" />
           {copy.settings}
@@ -566,5 +576,5 @@ function DoneView({
 }
 
 function Divider() {
-  return <div className="ml-5 h-px bg-white/8" />
+  return <div className="ml-5 h-px bg-fill-strong" />
 }

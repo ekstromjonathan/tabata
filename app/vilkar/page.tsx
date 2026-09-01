@@ -7,7 +7,7 @@ export default function TermsPage() {
     <div className="mx-auto min-h-dvh w-full max-w-md px-6 py-8 pt-[max(2rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))]">
       <SiteHeader />
       <h1 className="mt-10 text-[28px] font-semibold tracking-tight">Vilkår</h1>
-      <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-white/60">
+      <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-ink-muted">
         <p>
           Tabata koster 19 kroner per måned per bruker. Abonnementet fornyes
           automatisk til du sier det opp.
@@ -29,7 +29,7 @@ export default function TermsPage() {
           butikkabonnement; det må sies opp i App Store eller Google Play.
         </p>
       </div>
-      <Link href="/" className="mt-10 inline-block text-[14px] text-white/40">
+      <Link href="/" className="mt-10 inline-block text-[14px] text-ink-muted">
         Tilbake
       </Link>
     </div>

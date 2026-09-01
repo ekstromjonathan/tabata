@@ -55,8 +55,8 @@ export function LanguageSwitcher({
         aria-controls={menuId}
         onClick={() => setOpen((value) => !value)}
         className={cn(
-          "h-8 gap-1.5 rounded-full bg-white/6 px-2.5 text-[12px] font-medium tracking-[0.08em]",
-          "text-white/65 hover:bg-white/10 hover:text-white"
+          "h-8 gap-1.5 rounded-full bg-fill px-2.5 text-[12px] font-medium tracking-[0.08em]",
+          "text-ink-muted hover:bg-fill-strong hover:text-ink"
         )}
       >
         <Languages className="size-3.5 opacity-80" />
@@ -67,7 +67,7 @@ export function LanguageSwitcher({
           id={menuId}
           role="listbox"
           aria-label={copy.language}
-          className="absolute top-[calc(100%+8px)] right-0 min-w-[9.5rem] overflow-hidden rounded-2xl bg-[#1c1c1e] py-1 shadow-[0_12px_40px_rgba(0,0,0,0.45)]"
+          className="absolute top-[calc(100%+8px)] right-0 min-w-[9.5rem] overflow-hidden rounded-2xl bg-menu py-1 shadow-[0_12px_40px_rgba(0,0,0,0.18)]"
         >
           {LOCALES.map((item) => {
             const selected = item.id === locale
@@ -79,7 +79,7 @@ export function LanguageSwitcher({
                 aria-selected={selected}
                 className={cn(
                   "flex w-full items-center justify-between px-3.5 py-2.5 text-left text-[14px]",
-                  selected ? "text-white" : "text-white/55 hover:bg-white/6 hover:text-white"
+                  selected ? "text-ink" : "text-ink-muted hover:bg-fill hover:text-ink"
                 )}
                 onClick={() => {
                   onChange(item.id)
@@ -87,7 +87,7 @@ export function LanguageSwitcher({
                 }}
               >
                 <span>{item.name}</span>
-                <span className="text-[11px] tracking-[0.12em] text-white/35">
+                <span className="text-[11px] tracking-[0.12em] text-ink-faint">
                   {item.code}
                 </span>
               </button>

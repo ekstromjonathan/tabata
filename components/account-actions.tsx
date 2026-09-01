@@ -66,14 +66,14 @@ export function AccountActions({
       {subscribed ? (
         <Link
           href="/timer"
-          className="inline-flex h-14 items-center justify-center rounded-full bg-white text-[17px] font-medium text-black hover:bg-white/90"
+          className="inline-flex h-14 items-center justify-center rounded-full bg-cta text-[17px] font-medium text-cta-fg hover:opacity-90"
         >
           {copy.openTimer}
         </Link>
       ) : (
         <Link
           href="/abonner"
-          className="inline-flex h-14 items-center justify-center rounded-full bg-white text-[17px] font-medium text-black hover:bg-white/90"
+          className="inline-flex h-14 items-center justify-center rounded-full bg-cta text-[17px] font-medium text-cta-fg hover:opacity-90"
         >
           {copy.cta}
         </Link>
@@ -83,7 +83,7 @@ export function AccountActions({
           <Button
             type="submit"
             variant="ghost"
-            className="h-12 w-full rounded-full text-white/70 hover:bg-white/8 hover:text-white"
+            className="h-12 w-full rounded-full text-ink-muted hover:bg-fill hover:text-ink"
           >
             {copy.manageBilling}
           </Button>
@@ -96,7 +96,7 @@ export function AccountActions({
             variant="ghost"
             disabled={busy}
             onClick={() => void manageStore()}
-            className="h-12 w-full rounded-full text-white/70 hover:bg-white/8 hover:text-white"
+            className="h-12 w-full rounded-full text-ink-muted hover:bg-fill hover:text-ink"
           >
             {copy.manageStore}
           </Button>
@@ -105,7 +105,7 @@ export function AccountActions({
             variant="ghost"
             disabled={busy}
             onClick={() => void restore()}
-            className="h-12 w-full rounded-full text-white/70 hover:bg-white/8 hover:text-white"
+            className="h-12 w-full rounded-full text-ink-muted hover:bg-fill hover:text-ink"
           >
             {copy.restore}
           </Button>
@@ -115,7 +115,7 @@ export function AccountActions({
         <Button
           type="submit"
           variant="ghost"
-          className="h-12 w-full rounded-full text-white/45 hover:bg-white/8 hover:text-white"
+          className="h-12 w-full rounded-full text-ink-muted hover:bg-fill hover:text-ink"
         >
           {copy.logout}
         </Button>
@@ -125,7 +125,7 @@ export function AccountActions({
           <Button
             type="submit"
             variant="ghost"
-            className="h-12 w-full rounded-full text-red-400 hover:bg-white/8 hover:text-red-300"
+            className="h-12 w-full rounded-full text-red-400 hover:bg-fill hover:text-red-300"
           >
             {copy.deleteForever}
           </Button>
@@ -135,13 +135,13 @@ export function AccountActions({
           type="button"
           variant="ghost"
           onClick={() => setConfirmDelete(true)}
-          className="h-12 w-full rounded-full text-white/35 hover:bg-white/8 hover:text-red-300"
+          className="h-12 w-full rounded-full text-ink-faint hover:bg-fill hover:text-red-300"
         >
           {copy.deleteAccount}
         </Button>
       )}
       {restoreMessage ? (
-        <p className="text-center text-[13px] text-white/45">{restoreMessage}</p>
+        <p className="text-center text-[13px] text-ink-muted">{restoreMessage}</p>
       ) : null}
     </div>
   )

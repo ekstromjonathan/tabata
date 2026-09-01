@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useSyncExternalStore } from "react"
 
 import { LanguageSwitcher } from "@/components/language-switcher"
+import { ThemeSwitcher } from "@/components/theme-switcher"
 import {
   MESSAGES,
   getLocaleSnapshot,
@@ -28,17 +29,25 @@ export function SiteHeader({
 
   return (
     <header className="relative flex items-center justify-between px-1 py-2">
-      <Link href="/" className="text-[15px] font-medium tracking-tight text-white">
+      <Link href="/" className="text-[15px] font-medium tracking-tight text-ink">
         {copy.product}
       </Link>
-        <div className="flex items-center gap-3">
-          {right}
-          <LanguageSwitcher
-            locale={locale}
-            copy={timerCopy}
-            onChange={saveLocale}
-          />
-        </div>
+      <div className="flex items-center gap-2">
+        {right}
+        <ThemeSwitcher
+          labels={{
+            theme: timerCopy.theme,
+            light: timerCopy.themeLight,
+            dark: timerCopy.themeDark,
+            custom: timerCopy.themeCustom,
+          }}
+        />
+        <LanguageSwitcher
+          locale={locale}
+          copy={timerCopy}
+          onChange={saveLocale}
+        />
+      </div>
     </header>
   )
 }

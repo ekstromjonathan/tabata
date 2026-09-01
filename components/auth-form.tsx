@@ -42,7 +42,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
               type="email"
               autoComplete="email"
               required
-              className="h-12 rounded-xl bg-white/6 text-white"
+              className="h-12 rounded-xl bg-fill text-ink"
             />
           </div>
           <div className="space-y-2">
@@ -56,7 +56,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
               }
               minLength={8}
               required
-              className="h-12 rounded-xl bg-white/6 text-white"
+              className="h-12 rounded-xl bg-fill text-ink"
             />
           </div>
           {state?.error ? (
@@ -65,16 +65,16 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           <Button
             type="submit"
             disabled={pending}
-            className="h-14 w-full rounded-full bg-white text-[17px] font-medium text-black hover:bg-white/90"
+            className="h-14 w-full rounded-full bg-cta text-[17px] font-medium text-cta-fg hover:opacity-90"
           >
             {mode === "signup" ? copy.signup : copy.login}
           </Button>
         </form>
-        <p className="mt-6 text-center text-[14px] text-white/45">
+        <p className="mt-6 text-center text-[14px] text-ink-muted">
           {mode === "signup" ? copy.haveAccount : copy.needAccount}{" "}
           <Link
             href={mode === "signup" ? "/login" : "/signup"}
-            className="text-white hover:underline"
+            className="text-ink hover:underline"
           >
             {mode === "signup" ? copy.login : copy.signup}
           </Link>

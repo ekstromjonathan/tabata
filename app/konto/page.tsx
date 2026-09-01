@@ -17,8 +17,8 @@ export default async function AccountPage() {
       <SiteHeader />
       <main className="mt-10">
         <h1 className="text-[32px] font-semibold tracking-tight">{copy.account}</h1>
-        <p className="mt-2 text-[15px] text-white/50">{user.email}</p>
-        <p className="mt-6 text-[15px] text-white/70">
+        <p className="mt-2 text-[15px] text-ink-muted">{user.email}</p>
+        <p className="mt-6 text-[15px] text-ink">
           {copy.status}: {subscribed ? copy.active : copy.inactive}
         </p>
         <AccountActions
