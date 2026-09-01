@@ -1,5 +1,5 @@
-import { TabataTimer } from "@/components/tabata-timer"
+import { LandingPage } from "@/components/landing-page"
 
 export default function Home() {
-  return <TabataTimer />
+  return <LandingPage />
 }

@@ -1,24 +1,18 @@
 # Tabata
 
-Minimal tabata-timer til lokal trening. Svart skjerm, store tall, behagelige pip.
+Minimal tabata-timer som produkt: **19 kr per måned per bruker**.
 
-Norsk, svensk og engelsk — bytt språk øverst til høyre.
+Nettapp du legger på hjemskjermen. Kortbetaling via Stripe. Ingen App Store-avgift.
 
-## Hva du kan stille inn
+## Slik tjener du penger
 
-- **Arbeid** — aktive sekunder per øvelse
-- **Hvile** — pause mellom øvelser
-- **Øvelser** — antall øvelser per runde
-- **Runder** — hvor mange ganger kretsen gjentas
-- **Mellom runder** — pause etter en ferdig runde
+1. **Selg som nettapp**, ikke gjennom App Store. 19 kr/mnd tåler ikke 15–30 % Apple-kutt pluss gjennomgang.
+2. **Stripe** tar betalt hver måned (kort, Apple Pay, Google Pay). Du får utbetaling til bankkonto.
+3. **Kunde** oppretter konto → betaler 19 kr/mnd → åpner timeren. Oppsigelse i kontoen.
+4. **Selskap**: ENK eller AS. Avklar MVA (digitale tjenester i Norge er ofte 25 %). Sett prisen som 19 kr inkl. mva hvis du er MVA-pliktig, eller sjekk med regnskap.
+5. **Legg ut**: Vercel eller lignende. Pek et domene (f.eks. `tabata.app`) mot appen.
 
-Tallene kan skrives inn eller justeres med + og −. Total tid oppdateres med en gang.
-
-Klassisk tabata er 20 s arbeid, 10 s hvile, 8 øvelser og 1 runde.
-
-Under økten viser to små sirkler runde og øvelse. **Øvelse på nytt** starter den gjeldende arbeidsøkten forfra.
-
-De siste fem sekundene av økten telles ned med pip. Ferdig økt feires med confetti. Skjermen holdes våken mens timeren kjører.
+Lokalt uten Stripe-nøkler: opprett konto og trykk **Aktiver i utviklingsmodus**. Da får du full timer uten kort.
 
 ## Kjør lokalt
 
@@ -29,4 +23,31 @@ npm run dev
 
 Åpne [http://127.0.0.1:43173](http://127.0.0.1:43173).
 
-Lyden startes når du trykker **Start** — nettleseren krever et klikk før den spiller av pip.
+## Stripe (produksjon)
+
+1. Lag konto på [stripe.com](https://stripe.com).
+2. Opprett produkt **Tabata**, pris **19 NOK**, gjentakende **månedlig**.
+3. Kopier pris-ID (`price_...`) og nøkler til `.env`:
+
+```bash
+cp .env.example .env
+```
+
+```
+AUTH_SECRET=et-langt-tilfeldig-passord
+APP_URL=https://ditt-domene.no
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_PRICE_ID=price_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+4. Webhook-endepunkt: `https://ditt-domene.no/api/stripe/webhook`  
+   Hendelser: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`.
+5. Deploy til Vercel. Sett samme miljøvariabler der.  
+   For flere maskiner, bruk Turso/LibSQL og sett `DATABASE_URL`.
+
+Testkort i Stripe testmodus: `4242 4242 4242 4242`.
+
+## Timeren
+
+Arbeid, hvile, øvelser, runder og pause mellom runder. Pip og nedtelling. Norsk, svensk og engelsk.

@@ -15,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Tabata",
-  description: "Minimal tabata-timer til trening. Arbeid, hvile, runder og pause mellom runder.",
+  description: "Minimal tabata-timer. 19 kr i måneden.",
+  manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

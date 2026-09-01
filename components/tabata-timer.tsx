@@ -9,6 +9,7 @@ import {
   useSyncExternalStore,
 } from "react"
 import { createPortal } from "react-dom"
+import Link from "next/link"
 import { Pause, Play, RotateCcw } from "lucide-react"
 
 import { Confetti } from "@/components/confetti"
@@ -26,6 +27,7 @@ import {
   subscribeLocale,
   type Messages,
 } from "@/lib/i18n"
+import { PRODUCT } from "@/lib/product-i18n"
 import { cn } from "@/lib/utils"
 import {
   SETTING_BOUNDS,
@@ -52,7 +54,7 @@ const PHASE_COLOR = {
   roundRest: "#64d2ff",
 } as const
 
-export function TabataTimer() {
+export function TabataTimer({ accountHref }: { accountHref?: string }) {
   const settings = useSyncExternalStore(
     subscribeSettings,
     getSettingsSnapshot,
@@ -245,7 +247,20 @@ export function TabataTimer() {
         }}
       />
 
-      <LanguageSwitcher locale={locale} copy={copy} onChange={saveLocale} />
+      {accountHref ? (
+        <Link
+          href={accountHref}
+          className="absolute top-0 left-0 z-30 h-8 px-2.5 text-[12px] font-medium tracking-[0.08em] text-white/55 hover:text-white"
+        >
+          {PRODUCT[locale].account}
+        </Link>
+      ) : null}
+      <LanguageSwitcher
+        locale={locale}
+        copy={copy}
+        onChange={saveLocale}
+        className="absolute top-0 right-0"
+      />
 
       {status === "done" && typeof document !== "undefined"
         ? createPortal(<Confetti />, document.body)

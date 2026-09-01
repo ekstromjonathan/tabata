@@ -11,10 +11,12 @@ export function LanguageSwitcher({
   locale,
   copy,
   onChange,
+  className,
 }: {
   locale: Locale
   copy: Messages
   onChange: (locale: Locale) => void
+  className?: string
 }) {
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
@@ -43,7 +45,7 @@ export function LanguageSwitcher({
   }, [open])
 
   return (
-    <div ref={rootRef} className="absolute top-0 right-0 z-30">
+    <div ref={rootRef} className={cn("relative z-30", className)}>
       <Button
         type="button"
         variant="ghost"
