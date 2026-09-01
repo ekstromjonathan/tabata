@@ -48,3 +48,21 @@ next-env.d.ts
 .playwright-mcp/
 agent-tools/
 *.png
+!assets/*.png
+!public/*.png
+!public/icons/**
+!ios/App/App/Assets.xcassets/**/*.png
+!android/app/src/main/res/**/*.png
+
+# Capacitor native build
+android/.gradle/
+android/app/build/
+android/app/.cxx/
+android/build/
+android/captures/
+android/local.properties
+android/.idea/
+ios/App/Pods/
+ios/App/build/
+ios/DerivedData/
+*.iml

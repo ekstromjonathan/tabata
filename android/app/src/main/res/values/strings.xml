@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Tabata</string>
+    <string name="title_activity_main">Tabata</string>
+    <string name="package_name">com.ekstromjonathan.tabata</string>
+    <string name="custom_url_scheme">com.ekstromjonathan.tabata</string>
+</resources>

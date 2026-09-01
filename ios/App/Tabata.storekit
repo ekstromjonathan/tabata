@@ -1,0 +1,53 @@
+{
+  "identifier" : "Tabata",
+  "nonRenewingSubscriptions" : [],
+
+  "products" : [],
+  "settings" : {
+    "_applicationInternalID" : "tabata",
+    "_developerTeamID" : "",
+    "_failTransactionsEnabled" : false,
+    "_lastFetchedDate" : "",
+    "_locale" : "nb_NO",
+    "_storefront" : "NOR",
+    "_storeKitErrors" : []
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "tabata",
+      "localizations" : [],
+      "name" : "Tabata",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "19.00",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "tabataMonthly",
+          "localizations" : [
+            {
+              "description" : "Hele timeren. Si opp når som helst.",
+              "displayName" : "Tabata månedlig",
+              "locale" : "nb"
+            },
+            {
+              "description" : "The full timer. Cancel anytime.",
+              "displayName" : "Tabata monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "tabata_monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Tabata monthly",
+          "subscriptionGroupID" : "tabata",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

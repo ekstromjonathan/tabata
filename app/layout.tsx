@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 
+import { NativeBootstrap } from "@/components/native-bootstrap"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -22,6 +23,10 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Tabata",
   },
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
 }
 
 export const viewport: Viewport = {
@@ -37,7 +42,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="nb"
       className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
     >
-      <body className="min-h-full bg-black font-sans text-white">{children}</body>
+      <body className="min-h-full bg-black font-sans text-white">
+        <NativeBootstrap />
+        {children}
+      </body>
     </html>
   )
 }

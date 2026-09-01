@@ -65,6 +65,9 @@ export function LandingPage() {
         >
           {copy.cta}
         </Link>
+        <p className="mt-4 max-w-xs text-[13px] text-white/35">
+          {copy.downloadStores}
+        </p>
       </main>
 
       <footer className="relative flex items-center justify-between pt-8 text-[12px] text-white/30">

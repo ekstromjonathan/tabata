@@ -9,5 +9,5 @@ export default async function SubscribePage() {
   const user = await getCurrentUser()
   if (!user) redirect("/signup")
   if (isSubscribed(user)) redirect("/timer")
-  return <SubscribePanel mock={!stripeConfigured()} />
+  return <SubscribePanel mock={!stripeConfigured()} allowDevUnlock={process.env.NODE_ENV !== "production"} />
 }

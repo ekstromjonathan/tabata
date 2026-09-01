@@ -5,10 +5,16 @@ import { redirect } from "next/navigation"
 import {
   createSession,
   clearSession,
+  getCurrentUser,
   hashPassword,
   verifyPassword,
 } from "@/lib/auth"
-import { createUser, findUserByEmail, isSubscribed } from "@/lib/db"
+import {
+  createUser,
+  deleteUser,
+  findUserByEmail,
+  isSubscribed,
+} from "@/lib/db"
 
 function validEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -44,6 +50,14 @@ export async function loginAction(
 }
 
 export async function logoutAction() {
+  await clearSession()
+  redirect("/")
+}
+
+export async function deleteAccountAction() {
+  const user = await getCurrentUser()
+  if (!user) redirect("/login")
+  await deleteUser(user.id)
   await clearSession()
   redirect("/")
 }
