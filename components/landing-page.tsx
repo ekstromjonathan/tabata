@@ -60,12 +60,19 @@ export function LandingPage() {
         </ul>
 
         <Link
-          href="/signup"
+          href="/tabata"
           className="mt-10 inline-flex h-14 w-full max-w-[220px] items-center justify-center rounded-full bg-cta text-[17px] font-medium text-cta-fg hover:opacity-90"
+        >
+          {copy.tryNow}
+        </Link>
+        <p className="mt-3 text-[13px] text-ink-faint">{copy.tryNote}</p>
+        <Link
+          href="/signup"
+          className="mt-4 text-[14px] text-ink-muted hover:text-ink"
         >
           {copy.cta}
         </Link>
-        <p className="mt-4 max-w-xs text-[13px] text-ink-faint">
+        <p className="mt-6 max-w-xs text-[13px] text-ink-faint">
           {copy.downloadStores}
         </p>
       </main>

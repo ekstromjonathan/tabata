@@ -5,6 +5,9 @@ export type ProductCopy = {
   tagline: string
   pitch: string
   cta: string
+  tryNow: string
+  tryNote: string
+  keepTimer: string
   login: string
   signup: string
   logout: string
@@ -54,6 +57,9 @@ export const PRODUCT: Record<Locale, ProductCopy> = {
     pitch:
       "En minimal tabata-timer til telefonen. Store tall, behagelige pip, runder og øvelser. Last ned i App Store og Google Play.",
     cta: "Start for 19 kr/mnd",
+    tryNow: "Prøv timeren",
+    tryNote: "Ingen konto. Start med en gang.",
+    keepTimer: "Behold den — 19 kr/mnd",
     login: "Logg inn",
     signup: "Opprett konto",
     logout: "Logg ut",
@@ -106,6 +112,9 @@ export const PRODUCT: Record<Locale, ProductCopy> = {
     pitch:
       "En minimal tabata-timer till telefonen. Stora siffror, mjuka pip, rundor och övningar. Ladda ner i App Store och Google Play.",
     cta: "Börja för 19 kr/mån",
+    tryNow: "Prova timern",
+    tryNote: "Inget konto. Starta direkt.",
+    keepTimer: "Behåll den — 19 kr/mån",
     login: "Logga in",
     signup: "Skapa konto",
     logout: "Logga ut",
@@ -158,6 +167,9 @@ export const PRODUCT: Record<Locale, ProductCopy> = {
     pitch:
       "A minimal tabata timer for your phone. Large numbers, soft beeps, rounds and exercises. Download it on the App Store and Google Play.",
     cta: "Start for 19 NOK/month",
+    tryNow: "Try the timer",
+    tryNote: "No account. Start right away.",
+    keepTimer: "Keep it — 19 NOK/month",
     login: "Log in",
     signup: "Create account",
     logout: "Log out",

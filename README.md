@@ -13,7 +13,7 @@ npm install
 npm run dev
 ```
 
-Åpne [http://127.0.0.1:43173](http://127.0.0.1:43173).
+Åpne [http://127.0.0.1:43173](http://127.0.0.1:43173). Timeren uten konto: [http://127.0.0.1:43173/tabata](http://127.0.0.1:43173/tabata).
 
 Uten Stripe-nøkler: opprett konto og trykk **Aktiver i utviklingsmodus**.
 

@@ -55,7 +55,13 @@ const PHASE_COLOR = {
   roundRest: "#64d2ff",
 } as const
 
-export function TabataTimer({ accountHref }: { accountHref?: string }) {
+export function TabataTimer({
+  accountHref,
+  guest = false,
+}: {
+  accountHref?: string
+  guest?: boolean
+}) {
   const settings = useSyncExternalStore(
     subscribeSettings,
     getSettingsSnapshot,
@@ -248,7 +254,14 @@ export function TabataTimer({ accountHref }: { accountHref?: string }) {
         }}
       />
 
-      {accountHref ? (
+      {guest ? (
+        <Link
+          href="/signup"
+          className="absolute top-0 left-0 z-30 h-8 px-2.5 text-[12px] font-medium tracking-[0.08em] text-ink-muted hover:text-ink"
+        >
+          {PRODUCT[locale].keepTimer}
+        </Link>
+      ) : accountHref ? (
         <Link
           href={accountHref}
           className="absolute top-0 left-0 z-30 h-8 px-2.5 text-[12px] font-medium tracking-[0.08em] text-ink-muted hover:text-ink"
@@ -281,6 +294,7 @@ export function TabataTimer({ accountHref }: { accountHref?: string }) {
           settings={settings}
           duration={duration}
           copy={copy}
+          guestNote={guest ? PRODUCT[locale].tryNote : undefined}
           onChange={update}
           onStart={start}
         />
@@ -307,6 +321,7 @@ export function TabataTimer({ accountHref }: { accountHref?: string }) {
         <DoneView
           duration={duration}
           copy={copy}
+          keepTimer={guest ? PRODUCT[locale].keepTimer : undefined}
           onReset={reset}
           onStart={start}
         />
@@ -319,12 +334,14 @@ function SetupView({
   settings,
   duration,
   copy,
+  guestNote,
   onChange,
   onStart,
 }: {
   settings: Settings
   duration: number
   copy: Messages
+  guestNote?: string
   onChange: (key: keyof Settings, value: number) => void
   onStart: () => void
 }) {
@@ -403,7 +420,7 @@ function SetupView({
         {formatClock(duration)} {copy.total}
       </p>
 
-      <div className="mt-auto flex justify-center pt-8">
+      <div className="mt-auto flex flex-col items-center pt-8">
         <Button
           type="button"
           onClick={onStart}
@@ -411,6 +428,11 @@ function SetupView({
         >
           {copy.start}
         </Button>
+        {guestNote ? (
+          <p className="mt-3 text-center text-[13px] text-ink-faint">
+            {guestNote}
+          </p>
+        ) : null}
       </div>
     </main>
   )
@@ -534,11 +556,13 @@ function ActiveView({
 function DoneView({
   duration,
   copy,
+  keepTimer,
   onReset,
   onStart,
 }: {
   duration: number
   copy: Messages
+  keepTimer?: string
   onReset: () => void
   onStart: () => void
 }) {
@@ -561,6 +585,14 @@ function DoneView({
         >
           {copy.again}
         </Button>
+        {keepTimer ? (
+          <Link
+            href="/signup"
+            className="inline-flex h-12 w-full max-w-[220px] items-center justify-center text-[15px] text-ink-muted hover:text-ink"
+          >
+            {keepTimer}
+          </Link>
+        ) : null}
         <Button
           type="button"
           variant="ghost"
