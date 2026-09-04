@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tabata",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-04",
+  "compatibility_flags": [
+    // Enable Node.js APIs used by Next.js, Stripe, jose, and @libsql/client.
+    "nodejs_compat",
+    // Required so the Worker can fetch public URLs (Stripe, Apple, Turso).
+    "global_fetch_strictly_public"
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "tabata"
+    }
+  ]
+}

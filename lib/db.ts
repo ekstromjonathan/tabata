@@ -2,6 +2,13 @@ import { mkdirSync } from "node:fs"
 import { dirname } from "node:path"
 import { createClient, type Client } from "@libsql/client"
 
+function isCloudflareWorker() {
+  return (
+    typeof navigator !== "undefined" &&
+    navigator.userAgent === "Cloudflare-Workers"
+  )
+}
+
 export type User = {
   id: string
   email: string
@@ -22,6 +29,11 @@ function getClient() {
   if (client) return client
   const url = process.env.DATABASE_URL ?? "file:data/tabata.db"
   if (url.startsWith("file:")) {
+    if (isCloudflareWorker()) {
+      throw new Error(
+        "DATABASE_URL must be a remote libSQL/Turso URL on Cloudflare Workers (file: SQLite is not available)."
+      )
+    }
     const filePath = url.slice("file:".length)
     mkdirSync(dirname(filePath), { recursive: true })
   }
