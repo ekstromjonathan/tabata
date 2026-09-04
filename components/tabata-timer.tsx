@@ -15,11 +15,14 @@ import { Pause, Play, RotateCcw } from "lucide-react"
 import { Confetti } from "@/components/confetti"
 import { CountRing } from "@/components/count-ring"
 import { LanguageSwitcher } from "@/components/language-switcher"
+import { SpotifyEmbed } from "@/components/spotify-embed"
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import { StepperRow } from "@/components/stepper-row"
 import { TimerRing } from "@/components/timer-ring"
 import { Button } from "@/components/ui/button"
 import { tabataAudio } from "@/lib/audio"
+import { parseSpotify, type SpotifyRef } from "@/lib/spotify"
+import type { QuerySession } from "@/lib/session"
 import {
   MESSAGES,
   getLocaleSnapshot,
@@ -43,9 +46,34 @@ import {
   saveSettings,
   subscribeSettings,
   totalSeconds,
+  isWorkoutMode,
   type Phase,
   type Settings,
+  type WorkoutMode,
 } from "@/lib/workout"
+
+const GUEST_SESSION_KEY = "tabata-guest-session"
+
+type StoredGuest = {
+  mode?: string
+  title?: string | null
+  spotify?: string | null
+}
+
+function readStoredGuest(): StoredGuest | null {
+  if (typeof window === "undefined") return null
+  try {
+    const raw = window.localStorage.getItem(GUEST_SESSION_KEY)
+    return raw ? (JSON.parse(raw) as StoredGuest) : null
+  } catch {
+    return null
+  }
+}
+
+function writeStoredGuest(next: StoredGuest) {
+  if (typeof window === "undefined") return
+  window.localStorage.setItem(GUEST_SESSION_KEY, JSON.stringify(next))
+}
 
 type Status = "setup" | "running" | "paused" | "done"
 
@@ -58,9 +86,11 @@ const PHASE_COLOR = {
 export function TabataTimer({
   accountHref,
   guest = false,
+  query,
 }: {
   accountHref?: string
   guest?: boolean
+  query?: QuerySession
 }) {
   const settings = useSyncExternalStore(
     subscribeSettings,
@@ -77,6 +107,12 @@ export function TabataTimer({
   const [phases, setPhases] = useState<Phase[]>([])
   const [phaseIndex, setPhaseIndex] = useState(0)
   const [remainingMs, setRemainingMs] = useState(0)
+  const [mode, setMode] = useState<WorkoutMode>(query?.mode ?? "tabata")
+  const [title, setTitle] = useState<string | null>(query?.title ?? null)
+  const [spotify, setSpotify] = useState<SpotifyRef | null>(
+    query?.spotify ?? null
+  )
+  const appliedQueryRef = useRef(false)
 
   const phaseIndexRef = useRef(0)
   const phaseEndRef = useRef(0)
@@ -92,7 +128,7 @@ export function TabataTimer({
     document.documentElement.lang = locale
   }, [locale])
 
-  const duration = useMemo(() => totalSeconds(settings), [settings])
+  const duration = useMemo(() => totalSeconds(settings, mode), [settings, mode])
   const phase = phases[phaseIndex]
   const seconds = displaySeconds(remainingMs)
   const inLastFiveOfPhase = seconds <= 5 && seconds >= 1
@@ -141,16 +177,23 @@ export function TabataTimer({
     [finish, playPhaseCue]
   )
 
-  const start = useCallback(async () => {
-    await tabataAudio.unlock()
-    const list = buildPhases(settings)
-    if (list.length === 0) return
-    setPhases(list)
-    phasesRef.current = list
-    runningRef.current = true
-    setStatus("running")
-    beginPhase(0, list)
-  }, [beginPhase, settings])
+  const startWorkout = useCallback(
+    async (nextSettings: Settings, nextMode: WorkoutMode) => {
+      await tabataAudio.unlock()
+      const list = buildPhases(nextSettings, nextMode)
+      if (list.length === 0) return
+      setPhases(list)
+      phasesRef.current = list
+      runningRef.current = true
+      setStatus("running")
+      beginPhase(0, list)
+    },
+    [beginPhase]
+  )
+
+  const start = useCallback(() => {
+    return startWorkout(settings, mode)
+  }, [mode, settings, startWorkout])
 
   const pause = useCallback(() => {
     runningRef.current = false
@@ -218,6 +261,57 @@ export function TabataTimer({
     frame = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(frame)
   }, [status, beginPhase, finish])
+
+  useEffect(() => {
+    if (!guest || appliedQueryRef.current) return
+    appliedQueryRef.current = true
+
+    const stored = readStoredGuest()
+    let nextMode: WorkoutMode = "tabata"
+    let nextTitle: string | null = null
+    let nextSpotify: SpotifyRef | null = null
+
+    if (stored?.mode && isWorkoutMode(stored.mode)) nextMode = stored.mode
+    if (stored?.title) nextTitle = stored.title
+    if (stored?.spotify) {
+      const parsed = parseSpotify(stored.spotify)
+      if (!("error" in parsed)) nextSpotify = parsed
+    }
+
+    if (query?.mode) nextMode = query.mode
+    if (query?.title) nextTitle = query.title
+    if (query?.spotify) nextSpotify = query.spotify
+
+    const current = getSettingsSnapshot()
+    const nextSettings: Settings = { ...current, ...query?.settings }
+    if (nextMode === "emom" && query?.settings?.work === undefined) {
+      nextSettings.work = nextSettings.intervalSec
+    }
+    if (query?.settings || (query?.mode === "emom" && query.settings?.work === undefined)) {
+      saveSettings(nextSettings)
+    }
+
+    setMode(nextMode)
+    setTitle(nextTitle)
+    setSpotify(nextSpotify)
+    writeStoredGuest({
+      mode: nextMode,
+      title: nextTitle,
+      spotify: nextSpotify?.openUrl ?? null,
+    })
+
+    if (query?.autoStart) {
+      const url = new URL(window.location.href)
+      url.searchParams.delete("auto_start")
+      const search = url.searchParams.toString()
+      window.history.replaceState(
+        {},
+        "",
+        `${url.pathname}${search ? `?${search}` : ""}${url.hash}`
+      )
+      void startWorkout(nextSettings, nextMode)
+    }
+  }, [guest, query, startWorkout])
 
   useEffect(() => {
     if (status !== "running" || !("wakeLock" in navigator)) return
@@ -294,6 +388,8 @@ export function TabataTimer({
           settings={settings}
           duration={duration}
           copy={copy}
+          mode={guest ? mode : "tabata"}
+          title={guest ? title : null}
           guestNote={guest ? PRODUCT[locale].tryNote : undefined}
           onChange={update}
           onStart={start}
@@ -310,6 +406,8 @@ export function TabataTimer({
           inLastFive={inLastFiveOfPhase || inLastFiveOfSession}
           sessionEnd={inLastFiveOfSession}
           copy={copy}
+          title={guest ? title : null}
+          mode={guest ? mode : "tabata"}
           onPause={pause}
           onResume={resume}
           onReset={reset}
@@ -321,19 +419,39 @@ export function TabataTimer({
         <DoneView
           duration={duration}
           copy={copy}
+          title={guest ? title : null}
           keepTimer={guest ? PRODUCT[locale].keepTimer : undefined}
           onReset={reset}
           onStart={start}
         />
       ) : null}
+
+      {guest && spotify ? (
+        <div className="relative z-10 mx-auto mt-4 w-full max-w-md">
+          <SpotifyEmbed
+            spotify={spotify}
+            musicLabel={copy.music}
+            openLabel={copy.openSpotify}
+            collapsed={status === "running" || status === "paused"}
+          />
+        </div>
+      ) : null}
     </div>
   )
+}
+
+function modeLabel(mode: WorkoutMode, copy: Messages) {
+  if (mode === "emom") return copy.emom
+  if (mode === "interval") return copy.intervalMode
+  return "Tabata"
 }
 
 function SetupView({
   settings,
   duration,
   copy,
+  mode,
+  title,
   guestNote,
   onChange,
   onStart,
@@ -341,76 +459,139 @@ function SetupView({
   settings: Settings
   duration: number
   copy: Messages
+  mode: WorkoutMode
+  title: string | null
   guestNote?: string
   onChange: (key: keyof Settings, value: number) => void
   onStart: () => void
 }) {
+  const heading = title || modeLabel(mode, copy)
+  const emom = mode === "emom"
+  const showEmomWork = emom && settings.work < settings.intervalSec
+
   return (
     <main className="relative mx-auto flex w-full max-w-md flex-1 flex-col select-none">
       <header className="mt-4 mb-8 text-center sm:mb-10">
         <p className="text-[12px] font-medium tracking-[0.22em] text-ink-faint uppercase">
-          {copy.timer}
+          {title ? modeLabel(mode, copy) : copy.timer}
         </p>
-        <h1 className="mt-2 text-[40px] font-semibold tracking-tight">Tabata</h1>
+        <h1 className="mt-2 text-[40px] font-semibold tracking-tight">
+          {heading}
+        </h1>
       </header>
 
       <section className="overflow-hidden rounded-[22px] bg-fill">
-        <StepperRow
-          label={copy.work}
-          hint={copy.workHint}
-          value={settings.work}
-          suffix={SETTING_BOUNDS.work.suffix}
-          min={SETTING_BOUNDS.work.min}
-          max={SETTING_BOUNDS.work.max}
-          decreaseLabel={`${copy.decrease} ${copy.work.toLowerCase()}`}
-          increaseLabel={`${copy.increase} ${copy.work.toLowerCase()}`}
-          onChange={(value) => onChange("work", value)}
-        />
-        <Divider />
-        <StepperRow
-          label={copy.rest}
-          hint={copy.restHint}
-          value={settings.rest}
-          suffix={SETTING_BOUNDS.rest.suffix}
-          min={SETTING_BOUNDS.rest.min}
-          max={SETTING_BOUNDS.rest.max}
-          decreaseLabel={`${copy.decrease} ${copy.rest.toLowerCase()}`}
-          increaseLabel={`${copy.increase} ${copy.rest.toLowerCase()}`}
-          onChange={(value) => onChange("rest", value)}
-        />
-        <Divider />
-        <StepperRow
-          label={copy.exercises}
-          hint={copy.exercisesHint}
-          value={settings.exercises}
-          min={SETTING_BOUNDS.exercises.min}
-          max={SETTING_BOUNDS.exercises.max}
-          decreaseLabel={`${copy.decrease} ${copy.exercises.toLowerCase()}`}
-          increaseLabel={`${copy.increase} ${copy.exercises.toLowerCase()}`}
-          onChange={(value) => onChange("exercises", value)}
-        />
-        <Divider />
-        <StepperRow
-          label={copy.rounds}
-          value={settings.rounds}
-          min={SETTING_BOUNDS.rounds.min}
-          max={SETTING_BOUNDS.rounds.max}
-          decreaseLabel={`${copy.decrease} ${copy.rounds.toLowerCase()}`}
-          increaseLabel={`${copy.increase} ${copy.rounds.toLowerCase()}`}
-          onChange={(value) => onChange("rounds", value)}
-        />
-        <Divider />
-        <StepperRow
-          label={copy.roundRest}
-          hint={settings.rounds === 1 ? copy.roundRestHint : undefined}
-          value={settings.roundRest}
-          suffix={SETTING_BOUNDS.roundRest.suffix}
-          min={SETTING_BOUNDS.roundRest.min}
-          max={SETTING_BOUNDS.roundRest.max}
-          decreaseLabel={`${copy.decrease} ${copy.roundRest.toLowerCase()}`}
-          increaseLabel={`${copy.increase} ${copy.roundRest.toLowerCase()}`}
-          onChange={(value) => onChange("roundRest", value)}
-        />
+        {emom ? (
+          <>
+            <StepperRow
+              label={copy.interval}
+              hint={copy.intervalHint}
+              value={settings.intervalSec}
+              suffix={SETTING_BOUNDS.intervalSec.suffix}
+              min={SETTING_BOUNDS.intervalSec.min}
+              max={SETTING_BOUNDS.intervalSec.max}
+              decreaseLabel={`${copy.decrease} ${copy.interval.toLowerCase()}`}
+              increaseLabel={`${copy.increase} ${copy.interval.toLowerCase()}`}
+              onChange={(value) => onChange("intervalSec", value)}
+            />
+            {showEmomWork ? (
+              <>
+                <Divider />
+                <StepperRow
+                  label={copy.work}
+                  hint={copy.emomHint}
+                  value={settings.work}
+                  suffix={SETTING_BOUNDS.work.suffix}
+                  min={SETTING_BOUNDS.work.min}
+                  max={settings.intervalSec}
+                  decreaseLabel={`${copy.decrease} ${copy.work.toLowerCase()}`}
+                  increaseLabel={`${copy.increase} ${copy.work.toLowerCase()}`}
+                  onChange={(value) => onChange("work", value)}
+                />
+              </>
+            ) : null}
+            <Divider />
+            <StepperRow
+              label={copy.exercises}
+              hint={copy.exercisesHint}
+              value={settings.exercises}
+              min={SETTING_BOUNDS.exercises.min}
+              max={SETTING_BOUNDS.exercises.max}
+              decreaseLabel={`${copy.decrease} ${copy.exercises.toLowerCase()}`}
+              increaseLabel={`${copy.increase} ${copy.exercises.toLowerCase()}`}
+              onChange={(value) => onChange("exercises", value)}
+            />
+            <Divider />
+            <StepperRow
+              label={copy.rounds}
+              value={settings.rounds}
+              min={SETTING_BOUNDS.rounds.min}
+              max={SETTING_BOUNDS.rounds.max}
+              decreaseLabel={`${copy.decrease} ${copy.rounds.toLowerCase()}`}
+              increaseLabel={`${copy.increase} ${copy.rounds.toLowerCase()}`}
+              onChange={(value) => onChange("rounds", value)}
+            />
+          </>
+        ) : (
+          <>
+            <StepperRow
+              label={copy.work}
+              hint={copy.workHint}
+              value={settings.work}
+              suffix={SETTING_BOUNDS.work.suffix}
+              min={SETTING_BOUNDS.work.min}
+              max={SETTING_BOUNDS.work.max}
+              decreaseLabel={`${copy.decrease} ${copy.work.toLowerCase()}`}
+              increaseLabel={`${copy.increase} ${copy.work.toLowerCase()}`}
+              onChange={(value) => onChange("work", value)}
+            />
+            <Divider />
+            <StepperRow
+              label={copy.rest}
+              hint={copy.restHint}
+              value={settings.rest}
+              suffix={SETTING_BOUNDS.rest.suffix}
+              min={SETTING_BOUNDS.rest.min}
+              max={SETTING_BOUNDS.rest.max}
+              decreaseLabel={`${copy.decrease} ${copy.rest.toLowerCase()}`}
+              increaseLabel={`${copy.increase} ${copy.rest.toLowerCase()}`}
+              onChange={(value) => onChange("rest", value)}
+            />
+            <Divider />
+            <StepperRow
+              label={copy.exercises}
+              hint={copy.exercisesHint}
+              value={settings.exercises}
+              min={SETTING_BOUNDS.exercises.min}
+              max={SETTING_BOUNDS.exercises.max}
+              decreaseLabel={`${copy.decrease} ${copy.exercises.toLowerCase()}`}
+              increaseLabel={`${copy.increase} ${copy.exercises.toLowerCase()}`}
+              onChange={(value) => onChange("exercises", value)}
+            />
+            <Divider />
+            <StepperRow
+              label={copy.rounds}
+              value={settings.rounds}
+              min={SETTING_BOUNDS.rounds.min}
+              max={SETTING_BOUNDS.rounds.max}
+              decreaseLabel={`${copy.decrease} ${copy.rounds.toLowerCase()}`}
+              increaseLabel={`${copy.increase} ${copy.rounds.toLowerCase()}`}
+              onChange={(value) => onChange("rounds", value)}
+            />
+            <Divider />
+            <StepperRow
+              label={copy.roundRest}
+              hint={settings.rounds === 1 ? copy.roundRestHint : undefined}
+              value={settings.roundRest}
+              suffix={SETTING_BOUNDS.roundRest.suffix}
+              min={SETTING_BOUNDS.roundRest.min}
+              max={SETTING_BOUNDS.roundRest.max}
+              decreaseLabel={`${copy.decrease} ${copy.roundRest.toLowerCase()}`}
+              increaseLabel={`${copy.increase} ${copy.roundRest.toLowerCase()}`}
+              onChange={(value) => onChange("roundRest", value)}
+            />
+          </>
+        )}
       </section>
 
       <p
@@ -447,6 +628,8 @@ function ActiveView({
   inLastFive,
   sessionEnd,
   copy,
+  title,
+  mode,
   onPause,
   onResume,
   onReset,
@@ -460,6 +643,8 @@ function ActiveView({
   inLastFive: boolean
   sessionEnd: boolean
   copy: Messages
+  title: string | null
+  mode: WorkoutMode
   onPause: () => void
   onResume: () => void
   onReset: () => void
@@ -471,14 +656,22 @@ function ActiveView({
     paused
       ? copy.pause
       : phase.kind === "work"
-        ? copy.work
+        ? mode === "emom" && phase.duration === settings.intervalSec
+          ? copy.emom
+          : copy.work
         : phase.kind === "rest"
           ? copy.rest
           : copy.roundPause
 
   return (
     <main className="relative mx-auto grid min-h-0 w-full max-w-3xl flex-1 grid-rows-[auto_minmax(0,1fr)_auto] select-none">
-      <div className="flex items-center justify-center gap-8 pt-1 sm:gap-12 sm:pt-2">
+      <div className="flex flex-col items-center gap-3 pt-1 sm:pt-2">
+      {title ? (
+        <p className="text-center text-[13px] font-medium tracking-[0.08em] text-ink-muted">
+          {title}
+        </p>
+      ) : null}
+      <div className="flex items-center justify-center gap-8 sm:gap-12">
         <CountRing
           current={phase.round}
           total={settings.rounds}
@@ -491,6 +684,7 @@ function ActiveView({
           label={copy.exercise}
           color={paused ? "color-mix(in srgb, var(--ink) 35%, transparent)" : PHASE_COLOR.work}
         />
+      </div>
       </div>
 
       <div className="flex h-full min-h-0 w-full items-center justify-center [container-type:size]">
@@ -556,12 +750,14 @@ function ActiveView({
 function DoneView({
   duration,
   copy,
+  title,
   keepTimer,
   onReset,
   onStart,
 }: {
   duration: number
   copy: Messages
+  title: string | null
   keepTimer?: string
   onReset: () => void
   onStart: () => void
@@ -569,7 +765,7 @@ function DoneView({
   return (
     <main className="relative mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center text-center select-none">
       <p className="text-[12px] font-medium tracking-[0.22em] text-ink-faint uppercase">
-        {copy.done}
+        {title || copy.done}
       </p>
       <h1 className="mt-3 text-[40px] font-semibold tracking-tight">
         {copy.niceWork}
