@@ -1,0 +1,3 @@
+# Used by `npm run preview` / wrangler to pick Next.js .env files.
+# Copy to `.dev.vars` locally. Do not commit secrets.
+NEXTJS_ENV=development

@@ -7,6 +7,10 @@
     "build": "next build",
     "start": "next start --port 43173 --hostname 127.0.0.1",
     "lint": "eslint",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy -- --keep-vars",
+    "cf:build": "opennextjs-cloudflare build",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "cap:sync": "npx cap sync",
     "cap:ios": "npx cap open ios",
     "cap:android": "npx cap open android"
@@ -21,6 +25,7 @@
     "@capacitor/status-bar": "^8.0.3",
     "@capgo/native-purchases": "^8.7.0",
     "@libsql/client": "^0.17.4",
+    "@opennextjs/cloudflare": "^1.20.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "jose": "^6.2.10",
@@ -43,6 +48,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.129.0"
   }
 }

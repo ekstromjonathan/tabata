@@ -17,6 +17,13 @@
 /.next/
 /out/
 
+# OpenNext / Cloudflare
+.open-next/
+.wrangler/
+.dev.vars
+.dev.vars.local
+cloudflare-env.d.ts
+
 # production
 /build
 

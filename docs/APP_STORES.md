@@ -8,7 +8,7 @@ Native-appen er Capacitor. Den åpner den deployede nettappen (`APP_URL`) og tar
 
 ## Før du bygger
 
-1. Deploy Next.js-appen til HTTPS (for eksempel Vercel).
+1. Deploy Next.js-appen til HTTPS (Cloudflare Worker via OpenNext, se README).
 2. Sett `APP_URL` (og `CAPACITOR_SERVER_URL` om du vil overstyre) til den adressen.
 3. Kjør `npx cap sync`.
 
