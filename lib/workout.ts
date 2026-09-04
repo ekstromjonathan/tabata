@@ -1,9 +1,18 @@
+export type WorkoutMode = "tabata" | "interval" | "emom"
+
+export const WORKOUT_MODES = ["tabata", "interval", "emom"] as const
+
+export function isWorkoutMode(value: string): value is WorkoutMode {
+  return value === "tabata" || value === "interval" || value === "emom"
+}
+
 export type Settings = {
   work: number
   rest: number
   exercises: number
   rounds: number
   roundRest: number
+  intervalSec: number
 }
 
 export type PhaseKind = "work" | "rest" | "roundRest"
@@ -21,6 +30,7 @@ export const DEFAULT_SETTINGS: Settings = {
   exercises: 8,
   rounds: 1,
   roundRest: 60,
+  intervalSec: 60,
 }
 
 export const SETTING_BOUNDS = {
@@ -29,6 +39,7 @@ export const SETTING_BOUNDS = {
   exercises: { min: 1, max: 30, suffix: "" },
   rounds: { min: 1, max: 30, suffix: "" },
   roundRest: { min: 0, max: 600, suffix: "s" },
+  intervalSec: { min: 5, max: 600, suffix: "s" },
 } as const
 
 export function clampSetting(
@@ -40,7 +51,7 @@ export function clampSetting(
   return Math.min(max, Math.max(min, Math.round(value)))
 }
 
-export function buildPhases(settings: Settings): Phase[] {
+function buildIntervalPhases(settings: Settings): Phase[] {
   const phases: Phase[] = []
 
   for (let round = 1; round <= settings.rounds; round++) {
@@ -78,8 +89,53 @@ export function buildPhases(settings: Settings): Phase[] {
   return phases
 }
 
-export function totalSeconds(settings: Settings): number {
-  return buildPhases(settings).reduce((sum, phase) => sum + phase.duration, 0)
+function buildEmomPhases(settings: Settings): Phase[] {
+  const interval = clampSetting("intervalSec", settings.intervalSec)
+  const work = clampSetting("work", settings.work)
+  const phases: Phase[] = []
+
+  for (let round = 1; round <= settings.rounds; round++) {
+    for (let exercise = 1; exercise <= settings.exercises; exercise++) {
+      if (work > 0 && work < interval) {
+        phases.push({
+          kind: "work",
+          duration: work,
+          round,
+          exercise,
+        })
+        phases.push({
+          kind: "rest",
+          duration: interval - work,
+          round,
+          exercise,
+        })
+      } else {
+        phases.push({
+          kind: "work",
+          duration: interval,
+          round,
+          exercise,
+        })
+      }
+    }
+  }
+
+  return phases
+}
+
+export function buildPhases(
+  settings: Settings,
+  mode: WorkoutMode = "tabata"
+): Phase[] {
+  if (mode === "emom") return buildEmomPhases(settings)
+  return buildIntervalPhases(settings)
+}
+
+export function totalSeconds(
+  settings: Settings,
+  mode: WorkoutMode = "tabata"
+): number {
+  return buildPhases(settings, mode).reduce((sum, phase) => sum + phase.duration, 0)
 }
 
 export function remainingAfterIndex(phases: Phase[], index: number): number {
@@ -132,6 +188,10 @@ function parseSettings(raw: string | null): Settings {
       roundRest: clampSetting(
         "roundRest",
         parsed.roundRest ?? DEFAULT_SETTINGS.roundRest
+      ),
+      intervalSec: clampSetting(
+        "intervalSec",
+        parsed.intervalSec ?? DEFAULT_SETTINGS.intervalSec
       ),
     }
   } catch {
