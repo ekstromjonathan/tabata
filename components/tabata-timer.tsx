@@ -179,7 +179,10 @@ export function TabataTimer({
 
   const startWorkout = useCallback(
     async (nextSettings: Settings, nextMode: WorkoutMode) => {
-      await tabataAudio.unlock()
+      await Promise.race([
+        tabataAudio.unlock(),
+        new Promise<void>((resolve) => window.setTimeout(resolve, 400)),
+      ])
       const list = buildPhases(nextSettings, nextMode)
       if (list.length === 0) return
       setPhases(list)
@@ -271,16 +274,26 @@ export function TabataTimer({
     let nextTitle: string | null = null
     let nextSpotify: SpotifyRef | null = null
 
-    if (stored?.mode && isWorkoutMode(stored.mode)) nextMode = stored.mode
-    if (stored?.title) nextTitle = stored.title
-    if (stored?.spotify) {
-      const parsed = parseSpotify(stored.spotify)
-      if (!("error" in parsed)) nextSpotify = parsed
-    }
+    const hasQuery = Boolean(
+      query?.mode ||
+        query?.title ||
+        query?.spotify ||
+        query?.settings ||
+        query?.autoStart !== undefined
+    )
 
-    if (query?.mode) nextMode = query.mode
-    if (query?.title) nextTitle = query.title
-    if (query?.spotify) nextSpotify = query.spotify
+    if (hasQuery) {
+      nextMode = query?.mode ?? "tabata"
+      nextTitle = query?.title ?? null
+      nextSpotify = query?.spotify ?? null
+    } else {
+      if (stored?.mode && isWorkoutMode(stored.mode)) nextMode = stored.mode
+      if (stored?.title) nextTitle = stored.title
+      if (stored?.spotify) {
+        const parsed = parseSpotify(stored.spotify)
+        if (!("error" in parsed)) nextSpotify = parsed
+      }
+    }
 
     const current = getSettingsSnapshot()
     const nextSettings: Settings = { ...current, ...query?.settings }
