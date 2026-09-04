@@ -162,7 +162,7 @@ function readSpotify(
       ? {
           ok: false,
           error:
-            "Invalid Spotify link. Use an open.spotify.com album, playlist, or track URL (or a spotify: URI).",
+            "Invalid Spotify link. Use an open.spotify.com album, playlist, track, or artist URL (or a spotify: URI).",
         }
       : { ok: true, value: undefined }
   }

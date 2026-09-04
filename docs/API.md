@@ -19,7 +19,7 @@ JSON body. Every field is optional.
 | `round_rest` | number | `60` | Seconds between rounds. Tabata/interval only. Clamped to 0–600 |
 | `interval_sec` | number | `60` | EMOM interval length. Clamped to 5–600 |
 | `title` | string | — | Shown on the guest timer. Max 80 characters |
-| `spotify` | string | — | `open.spotify.com` album/playlist/track URL, or `spotify:` URI |
+| `spotify` | string | — | `open.spotify.com` album/playlist/track/artist URL, or `spotify:` URI |
 | `auto_start` | boolean | `false` | `true` / `1` starts the workout when the deep link opens |
 
 CamelCase aliases (`roundRest`, `intervalSec`, `autoStart`) are accepted.
@@ -77,10 +77,18 @@ Accepted:
 - `https://open.spotify.com/album/{id}`
 - `https://open.spotify.com/playlist/{id}`
 - `https://open.spotify.com/track/{id}`
+- `https://open.spotify.com/artist/{id}`
 - `https://open.spotify.com/intl-xx/…` and `/embed/…` variants
-- `spotify:album:{id}`, `spotify:playlist:{id}`, `spotify:track:{id}`
+- `spotify:album:{id}`, `spotify:playlist:{id}`, `spotify:track:{id}`, `spotify:artist:{id}`
 
-`si=` tracking is stripped. The guest timer shows a compact official embed plus **Åpne i Spotify**.
+`si=` tracking is stripped. Embed URL is `https://open.spotify.com/embed/{type}/{id}`. The guest timer shows a compact official embed plus **Åpne i Spotify**.
+
+Artist example:
+
+```
+https://open.spotify.com/artist/6KImCVD70vtIoJWnq6nGn3?si=bG0mY6bxRX2OE72N1TPKTQ
+→ https://open.spotify.com/embed/artist/6KImCVD70vtIoJWnq6nGn3
+```
 
 ## Curl
 
@@ -122,6 +130,16 @@ curl -sS -X POST https://tabata-production.up.railway.app/api/session \
     "rounds": 10,
     "title": "Fredag EMOM",
     "spotify": "https://open.spotify.com/album/6Nb3e1x9a1IHlbUDtYK52s"
+  }'
+```
+
+Artist:
+
+```bash
+curl -sS -X POST https://tabata-production.up.railway.app/api/session \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "spotify": "https://open.spotify.com/artist/6KImCVD70vtIoJWnq6nGn3?si=bG0mY6bxRX2OE72N1TPKTQ"
   }'
 ```
 

@@ -23,6 +23,22 @@ assert.equal(
 assert.ok(!("error" in parseSpotify("spotify:playlist:37i9dQZF1DXcBWIGoYBM5M")))
 assert.ok("error" in parseSpotify("https://example.com/album/nope"))
 
+const artist =
+  "https://open.spotify.com/artist/6KImCVD70vtIoJWnq6nGn3?si=bG0mY6bxRX2OE72N1TPKTQ"
+const artistRef = parseSpotify(artist)
+assert.ok(!("error" in artistRef))
+assert.equal(artistRef.type, "artist")
+assert.equal(artistRef.id, "6KImCVD70vtIoJWnq6nGn3")
+assert.equal(
+  artistRef.embedUrl,
+  "https://open.spotify.com/embed/artist/6KImCVD70vtIoJWnq6nGn3"
+)
+assert.equal(
+  artistRef.openUrl,
+  "https://open.spotify.com/artist/6KImCVD70vtIoJWnq6nGn3"
+)
+assert.ok(!("error" in parseSpotify("spotify:artist:6KImCVD70vtIoJWnq6nGn3")))
+
 const tabata = parseApiBody(
   {
     work: 20,
@@ -84,6 +100,18 @@ if (split.ok) {
   assert.equal(phases[0]?.duration, 40)
   assert.equal(phases[1]?.kind, "rest")
   assert.equal(phases[1]?.duration, 20)
+}
+
+const artistSession = parseApiBody(
+  { spotify: artist },
+  "https://example.test"
+)
+assert.equal(artistSession.ok, true)
+if (artistSession.ok) {
+  assert.equal(
+    artistSession.spotify?.embedUrl,
+    "https://open.spotify.com/embed/artist/6KImCVD70vtIoJWnq6nGn3"
+  )
 }
 
 const bad = parseApiBody({ spotify: "not-a-link" }, "https://example.test")

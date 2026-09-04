@@ -1,4 +1,4 @@
-export const SPOTIFY_TYPES = ["album", "playlist", "track"] as const
+export const SPOTIFY_TYPES = ["album", "playlist", "track", "artist"] as const
 
 export type SpotifyType = (typeof SPOTIFY_TYPES)[number]
 
@@ -11,17 +11,18 @@ export type SpotifyRef = {
 }
 
 const ID_PATTERN = /^[A-Za-z0-9]{10,34}$/
-const URI_PATTERN = /^spotify:(album|playlist|track):([A-Za-z0-9]{10,34})$/i
+const URI_PATTERN =
+  /^spotify:(album|playlist|track|artist):([A-Za-z0-9]{10,34})$/i
 const PATH_PATTERN =
-  /^(?:\/(?:intl-[a-z]{2}))?(?:\/embed)?\/(album|playlist|track)\/([A-Za-z0-9]{10,34})\/?$/i
+  /^(?:\/(?:intl-[a-z]{2}))?(?:\/embed)?\/(album|playlist|track|artist)\/([A-Za-z0-9]{10,34})\/?$/i
 const USER_PLAYLIST_PATTERN =
   /^\/user\/[^/]+\/playlist\/([A-Za-z0-9]{10,34})\/?$/i
 
 const INVALID_SPOTIFY =
-  "Invalid Spotify link. Use an open.spotify.com album, playlist, or track URL (or a spotify: URI)."
+  "Invalid Spotify link. Use an open.spotify.com album, playlist, track, or artist URL (or a spotify: URI)."
 
 function isSpotifyType(value: string): value is SpotifyType {
-  return value === "album" || value === "playlist" || value === "track"
+  return (SPOTIFY_TYPES as readonly string[]).includes(value)
 }
 
 function buildRef(
