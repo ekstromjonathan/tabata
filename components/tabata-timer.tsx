@@ -15,13 +15,11 @@ import { Pause, Play, RotateCcw } from "lucide-react"
 import { Confetti } from "@/components/confetti"
 import { CountRing } from "@/components/count-ring"
 import { LanguageSwitcher } from "@/components/language-switcher"
-import { SpotifyEmbed } from "@/components/spotify-embed"
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import { StepperRow } from "@/components/stepper-row"
 import { TimerRing } from "@/components/timer-ring"
 import { Button } from "@/components/ui/button"
 import { tabataAudio } from "@/lib/audio"
-import { parseSpotify, type SpotifyRef } from "@/lib/spotify"
 import type { QuerySession } from "@/lib/session"
 import {
   MESSAGES,
@@ -57,7 +55,6 @@ const GUEST_SESSION_KEY = "tabata-guest-session"
 type StoredGuest = {
   mode?: string
   title?: string | null
-  spotify?: string | null
 }
 
 function readStoredGuest(): StoredGuest | null {
@@ -109,9 +106,6 @@ export function TabataTimer({
   const [remainingMs, setRemainingMs] = useState(0)
   const [mode, setMode] = useState<WorkoutMode>(query?.mode ?? "tabata")
   const [title, setTitle] = useState<string | null>(query?.title ?? null)
-  const [spotify, setSpotify] = useState<SpotifyRef | null>(
-    query?.spotify ?? null
-  )
   const appliedQueryRef = useRef(false)
 
   const phaseIndexRef = useRef(0)
@@ -272,12 +266,10 @@ export function TabataTimer({
     const stored = readStoredGuest()
     let nextMode: WorkoutMode = "tabata"
     let nextTitle: string | null = null
-    let nextSpotify: SpotifyRef | null = null
 
     const hasQuery = Boolean(
       query?.mode ||
         query?.title ||
-        query?.spotify ||
         query?.settings ||
         query?.autoStart !== undefined
     )
@@ -285,14 +277,9 @@ export function TabataTimer({
     if (hasQuery) {
       nextMode = query?.mode ?? "tabata"
       nextTitle = query?.title ?? null
-      nextSpotify = query?.spotify ?? null
     } else {
       if (stored?.mode && isWorkoutMode(stored.mode)) nextMode = stored.mode
       if (stored?.title) nextTitle = stored.title
-      if (stored?.spotify) {
-        const parsed = parseSpotify(stored.spotify)
-        if (!("error" in parsed)) nextSpotify = parsed
-      }
     }
 
     const current = getSettingsSnapshot()
@@ -306,11 +293,9 @@ export function TabataTimer({
 
     setMode(nextMode)
     setTitle(nextTitle)
-    setSpotify(nextSpotify)
     writeStoredGuest({
       mode: nextMode,
       title: nextTitle,
-      spotify: nextSpotify?.openUrl ?? null,
     })
 
     if (query?.autoStart) {
@@ -437,17 +422,6 @@ export function TabataTimer({
           onReset={reset}
           onStart={start}
         />
-      ) : null}
-
-      {guest && spotify ? (
-        <div className="relative z-10 mx-auto mt-4 w-full max-w-md">
-          <SpotifyEmbed
-            spotify={spotify}
-            musicLabel={copy.music}
-            openLabel={copy.openSpotify}
-            collapsed={status === "running" || status === "paused"}
-          />
-        </div>
       ) : null}
     </div>
   )

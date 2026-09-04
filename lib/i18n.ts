@@ -31,8 +31,6 @@ export type Messages = {
   themeCustom: string
   decrease: string
   increase: string
-  music: string
-  openSpotify: string
   interval: string
   intervalHint: string
   emom: string
@@ -78,8 +76,6 @@ export const MESSAGES: Record<Locale, Messages> = {
     themeCustom: "Egen",
     decrease: "Reduser",
     increase: "Øk",
-    music: "Musikk",
-    openSpotify: "Åpne i Spotify",
     interval: "Intervall",
     intervalHint: "Per minutt",
     emom: "EMOM",
@@ -117,8 +113,6 @@ export const MESSAGES: Record<Locale, Messages> = {
     themeCustom: "Egen",
     decrease: "Minska",
     increase: "Öka",
-    music: "Musik",
-    openSpotify: "Öppna i Spotify",
     interval: "Intervall",
     intervalHint: "Per minut",
     emom: "EMOM",
@@ -156,8 +150,6 @@ export const MESSAGES: Record<Locale, Messages> = {
     themeCustom: "Custom",
     decrease: "Decrease",
     increase: "Increase",
-    music: "Music",
-    openSpotify: "Open in Spotify",
     interval: "Interval",
     intervalHint: "Per minute",
     emom: "EMOM",
