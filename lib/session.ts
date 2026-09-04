@@ -5,7 +5,6 @@ import {
   type Settings,
   type WorkoutMode,
 } from "@/lib/workout"
-import { parseSpotify, type SpotifyRef } from "@/lib/spotify"
 
 export const TITLE_MAX_LENGTH = 80
 
@@ -23,11 +22,6 @@ export type SessionResult = {
   mode: WorkoutMode
   title: string | null
   settings: SessionSettings
-  spotify: {
-    input: string
-    embedUrl: string
-    openUrl: string
-  } | null
   autoStart: boolean
   url: string
 }
@@ -41,7 +35,6 @@ export type QuerySession = {
   mode?: WorkoutMode
   title?: string
   settings?: Partial<Settings>
-  spotify?: SpotifyRef
   autoStart?: boolean
 }
 
@@ -150,29 +143,6 @@ function readMode(
   return { ok: true, value: raw }
 }
 
-function readSpotify(
-  raw: unknown,
-  strict: boolean
-): { ok: true; value: SpotifyRef | undefined } | { ok: false; error: string } {
-  if (raw === undefined || raw === null || raw === "") {
-    return { ok: true, value: undefined }
-  }
-  if (typeof raw !== "string") {
-    return strict
-      ? {
-          ok: false,
-          error:
-            "Invalid Spotify link. Use an open.spotify.com album, playlist, track, or artist URL (or a spotify: URI).",
-        }
-      : { ok: true, value: undefined }
-  }
-  const parsed = parseSpotify(raw)
-  if ("error" in parsed) {
-    return strict ? { ok: false, error: parsed.error } : { ok: true, value: undefined }
-  }
-  return { ok: true, value: parsed }
-}
-
 export type ParsedSession = {
   ok: true
   query: QuerySession
@@ -203,12 +173,6 @@ export function parseSessionInput(
   if (!autoRead.ok) return autoRead
   if (autoRead.value !== undefined) {
     query.autoStart = autoRead.value
-  }
-
-  const spotifyRead = readSpotify(raw.spotify, strict)
-  if (!spotifyRead.ok) return spotifyRead
-  if (spotifyRead.value) {
-    query.spotify = spotifyRead.value
   }
 
   const provided: Partial<Record<SettingKey, true>> = {}
@@ -289,7 +253,6 @@ export function buildGuestUrl(
     mode: WorkoutMode
     title: string | null
     settings: Settings
-    spotify: SpotifyRef | null
     autoStart: boolean
   }
 ): string {
@@ -304,7 +267,6 @@ export function buildGuestUrl(
     params.set("interval_sec", String(input.settings.intervalSec))
   }
   if (input.title) params.set("title", input.title)
-  if (input.spotify) params.set("spotify", input.spotify.openUrl)
   params.set("auto_start", input.autoStart ? "1" : "0")
   return `${origin.replace(/\/$/, "")}/tabata?${params.toString()}`
 }
@@ -316,7 +278,6 @@ export function toSessionResult(
 ): SessionResult {
   const mode = query.mode ?? "tabata"
   const title = query.title ?? null
-  const spotify = query.spotify ?? null
   const autoStart = query.autoStart ?? false
   return {
     ok: true,
@@ -330,19 +291,11 @@ export function toSessionResult(
       roundRest: settings.roundRest,
       intervalSec: settings.intervalSec,
     },
-    spotify: spotify
-      ? {
-          input: spotify.input,
-          embedUrl: spotify.embedUrl,
-          openUrl: spotify.openUrl,
-        }
-      : null,
     autoStart,
     url: buildGuestUrl(origin, {
       mode,
       title,
       settings,
-      spotify,
       autoStart,
     }),
   }
